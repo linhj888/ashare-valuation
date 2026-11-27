@@ -109,6 +109,31 @@ body {
 }
 .diverge { font-size: 11.5px; line-height: 1.6; color: var(--amber-ink); margin: 8px 0 0; }
 
+.badge.sm { font-size: 12px; padding: 5px 11px; }
+
+.confirm-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  margin: 10px 0 8px;
+}
+.confirm-grid > div {
+  background: #f8fafc; border-radius: 10px; padding: 9px 10px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.confirm-grid span { font-size: 11px; color: var(--muted); }
+.confirm-grid b { font-size: 15px; }
+.confirm-grid small { font-size: 10px; color: var(--muted); line-height: 1.4; }
+
+.buy-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  margin: 8px 0;
+}
+.buy-stat { border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; }
+.buy-stat.highlight { border-color: #86efac; background: #f0fdf4; }
+.buy-stat span { font-size: 11px; color: var(--muted); display: block; }
+.buy-stat b { font-size: 21px; display: block; margin: 1px 0; }
+.buy-stat small { font-size: 10px; color: var(--muted); }
+.confirm-note { font-size: 12.5px; line-height: 1.7; color: #374151; margin: 8px 0 0; }
+
 .up { color: var(--red-ink); }
 .down { color: var(--green-ink); }
 
