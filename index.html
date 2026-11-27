@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4f6f9">
+<title>A股指数估值红绿灯</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+  <header class="header">
+    <h1>A股指数估值红绿灯</h1>
+    <p class="sub">PB 十年百分位 · 低估 / 正常 / 高估</p>
+  </header>
+
+  <nav id="tabs" class="tabs" aria-label="选择指数"></nav>
+
+  <section class="card hero" id="hero"></section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>估值温度历史</h2>
+      <span class="hint">0 = 最便宜 · 100 = 最贵</span>
+    </div>
+    <div id="chart" class="chart"></div>
+    <div class="legend">
+      <span><i class="dot low"></i>低估 (&lt;30)</span>
+      <span><i class="dot mid"></i>正常 (30–70)</span>
+      <span><i class="dot high"></i>高估 (&gt;70)</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>历史同区间表现</h2></div>
+    <div id="stats"></div>
+  </section>
+
+  <details class="card method">
+    <summary>指标说明与数据口径</summary>
+    <div class="method-body">
+      <p><b>指标：</b>PB（市净率）在过去 10 年中的百分位。百分位越高，说明当前 PB 相对自身历史越贵。</p>
+      <p><b>分档：</b>&lt;30 低估；30–70 正常；&gt;70 高估。窗口为滚动 10 年，最少 5 年。</p>
+      <p><b>为什么用 PB：</b>我们比较了 PE(TTM)、PE(静态)、PB、ERP、股息率及组合。PB 在四个指数上都保持“低估→高估、未来收益递减”的单调性；PE 在中证500/创业板会出现“正常区比低估区收益更高”的失真，主要受盈利周期影响。因此用 PB 作为主指标，PE 分位只作参考。</p>
+      <p><b>验证：</b>按月末估值分档，统计未来 1 年、3 年的含股息总收益与上涨概率。样本为重叠的月度观测，只作历史统计，不代表未来。</p>
+      <p><b>数据：</b>指数 PB/PE 来自乐咕乐股，收益来自中证全收益指数；创业板50 无官方全收益，用价格 + 0.6%/年股息近似。覆盖上证50、沪深300、中证500、创业板50；中证1000 因高位样本不足未纳入。数据截至 <span id="updated"></span>，每月更新。</p>
+      <p class="warn">本页仅为历史数据统计，不构成任何投资建议。</p>
+    </div>
+  </details>
+
+  <footer class="footer">数据截至 <span id="updated2"></span> · 每月更新</footer>
+</main>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
