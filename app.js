@@ -107,61 +107,56 @@
         "<thead><tr><th>区间</th><th>样本</th><th>未来1年</th><th>1年胜率</th><th>未来3年</th></tr></thead>" +
         "<tbody>" + rows + "</tbody>" +
       "</table>" +
-      '<p class="footnote">样本为月数；收益为含股息总收益；重叠月度观测，仅作历史统计。买入信号的胜率见上方“买入确认”。</p>';
+      '<p class="footnote">样本为月数；收益为含股息总收益；重叠月度观测，仅作历史统计。</p>';
   }
 
-  function ciText(s) {
-    if (!s || s.lo === null || s.lo === undefined) return "";
-    return "，95%CI " + Math.round(s.lo * 100) + "–" + Math.round(s.hi * 100) + "%";
-  }
+  var RULES = [
+    { tier: "lt10", span: "PB &lt; 10", txt: "买 3 份" },
+    { tier: "10to20", span: "10–20", txt: "买 2 份" },
+    { tier: "20to30", span: "20–30", txt: "买 1 份" },
+    { tier: "30to70", span: "30–70", txt: "停投" },
+    { tier: "gt70", span: "&gt;70", txt: "分批卖" }
+  ];
 
-  function renderConfirm(it) {
-    var c = it.confirm || {};
-    var bs = it.buy_stats || {};
-    var low = bs.low || {};
-    var conf = bs.confirm || {};
-    var status, cls, note;
+  function renderPlan(it) {
+    var pl = it.plan || { action: "hold", units: 0, tier: "30to70" };
+    var score = it.score.toFixed(0);
+    var big, suffix, label, cls, sub;
 
-    if (it.zone !== "低估") {
-      status = "不在低估区";
-      cls = "mid";
-      note = "当前估值不在低估区，不触发买入确认。";
-    } else if (c.confirmed) {
-      status = "可分批";
+    if (pl.action === "buy") {
       cls = "low";
-      note = "低估且价格已企稳。历史上此状态首次买入，未来 1 年胜率 " +
-        Math.round(conf.win * 100) + "%（" + conf.n + " 次" + ciText(conf) + "）。";
+      label = "买入 " + pl.units + " 份";
+      big = String(pl.units);
+      suffix = "份";
+      sub = "PB 分位 " + score + " · 低估，越跌越买";
+    } else if (pl.action === "sell") {
+      cls = "high";
+      label = "卖出 " + pl.sell_frac;
+      big = pl.sell_frac;
+      suffix = "仓位";
+      sub = "PB 分位 " + score + " · 高估第 " + pl.sell_stage + " 个月卖出";
     } else {
-      status = "等待企稳";
       cls = "mid";
-      note = "低估但价格未企稳。历史上低估区直接买入的 1 年胜率 " +
-        Math.round(low.win * 100) + "%（" + low.n + " 次" + ciText(low) + "）；" +
-        "等企稳并满足市场宽度后为 " + Math.round(conf.win * 100) + "%（" +
-        conf.n + " 次" + ciText(conf) + "）。";
+      label = "暂停定投";
+      big = "0";
+      suffix = "份";
+      sub = "PB 分位 " + score + " · 正常区，按兵不动";
     }
 
-    var vs = c.price >= c.ma10 ? "高于" : "低于";
-    var ret3 = (c.ret3 * 100).toFixed(1) + "%";
-    var smallNote = (conf.n && conf.n < 10) ? " 确认信号样本仅 " + conf.n + " 次，置信度有限。" : "";
+    var rules = RULES.map(function (r) {
+      var active = r.tier === pl.tier ? " active " + cls : "";
+      return '<div class="plan-rule' + active + '"><span>' + r.span +
+        "</span><b>" + r.txt + "</b></div>";
+    }).join("");
 
-    $("#confirm").innerHTML =
-      '<div class="card-head"><h2>买入确认</h2><span class="badge sm ' + cls + '">' + status + "</span></div>" +
-      '<div class="confirm-grid">' +
-        "<div><span>市场宽度</span><b>" + c.breadth + " / " + c.breadth_total +
-          "</b><small>至少 2 个指数低估</small></div>" +
-        "<div><span>价格企稳</span><b>" + (c.stabilized ? "是" : "否") +
-          "</b><small>收盘" + vs + "10月均线 · 近3月 " + ret3 + "</small></div>" +
+    $("#plan").innerHTML =
+      '<div class="card-head"><h2>定投计划</h2><span class="badge sm ' + cls + '">' + label + "</span></div>" +
+      '<div class="plan-hero">' +
+        '<div class="plan-num">' + big + "<span>" + suffix + "</span></div>" +
+        '<div class="plan-sub">' + sub + "</div>" +
       "</div>" +
-      '<div class="buy-stats">' +
-        '<div class="buy-stat"><span>低估区直接买</span><b>' +
-          Math.round(low.win * 100) + "%</b><small>" + low.n +
-          " 次 · 1年均值 " + pct(low.avg1) + "</small></div>" +
-        '<div class="buy-stat highlight"><span>低估 + 确认</span><b>' +
-          Math.round(conf.win * 100) + "%</b><small>" + conf.n +
-          " 次 · 1年均值 " + pct(conf.avg1) + "</small></div>" +
-      "</div>" +
-      '<p class="confirm-note">' + note + smallNote + "</p>" +
-      '<p class="footnote">胜率为未来 1 年上涨概率，按“区间首次买入”计，不是每月重复计数。确认 = 至少 2 个指数低估 且（收盘&gt;10月均线 或 近3月上涨）。</p>';
+      '<div class="plan-rules">' + rules + "</div>" +
+      '<p class="footnote">每份为固定金额。低估区越跌越买，正常区停投，高估区连续 3 个月分批卖出（第 1 月卖 1/3，第 2 月卖剩余 1/2，第 3 月清仓）。历史回测年化：上证50 8.0% · 沪深300 7.8% · 中证500 11.5% · 创业板50 26.4%（无脑月投仅 3.6–5.1%）。</p>';
   }
 
   function renderChart(it) {
@@ -257,7 +252,7 @@
     var it = data.indices[state.idx];
     renderTabs();
     renderHero(it);
-    renderConfirm(it);
+    renderPlan(it);
     renderChart(it);
     renderStats(it);
     document.title = it.name + " " + it.zone + " · A股指数估值红绿灯";

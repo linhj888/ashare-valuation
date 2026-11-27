@@ -111,28 +111,26 @@ body {
 
 .badge.sm { font-size: 12px; padding: 5px 11px; }
 
-.confirm-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+.plan-hero { display: flex; align-items: baseline; gap: 10px; margin: 12px 0 10px; }
+.plan-num { font-size: 44px; font-weight: 800; line-height: 1; letter-spacing: -1px; }
+.plan-num span { font-size: 14px; color: var(--muted); font-weight: 600; margin-left: 3px; }
+.plan-sub { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+
+.plan-rules {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;
   margin: 10px 0 8px;
 }
-.confirm-grid > div {
-  background: #f8fafc; border-radius: 10px; padding: 9px 10px;
-  display: flex; flex-direction: column; gap: 2px;
+.plan-rule {
+  border: 1px solid var(--line); border-radius: 9px; padding: 8px 2px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  text-align: center;
 }
-.confirm-grid span { font-size: 11px; color: var(--muted); }
-.confirm-grid b { font-size: 15px; }
-.confirm-grid small { font-size: 10px; color: var(--muted); line-height: 1.4; }
-
-.buy-stats {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-  margin: 8px 0;
-}
-.buy-stat { border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; }
-.buy-stat.highlight { border-color: #86efac; background: #f0fdf4; }
-.buy-stat span { font-size: 11px; color: var(--muted); display: block; }
-.buy-stat b { font-size: 21px; display: block; margin: 1px 0; }
-.buy-stat small { font-size: 10px; color: var(--muted); }
-.confirm-note { font-size: 12.5px; line-height: 1.7; color: #374151; margin: 8px 0 0; }
+.plan-rule span { font-size: 10px; color: var(--muted); }
+.plan-rule b { font-size: 12px; }
+.plan-rule.active.low { background: var(--green-bg); border-color: #86efac; color: var(--green-ink); }
+.plan-rule.active.mid { background: var(--amber-bg); border-color: #fcd34d; color: var(--amber-ink); }
+.plan-rule.active.high { background: var(--red-bg); border-color: #fca5a5; color: var(--red-ink); }
+.plan-rule.active span { color: inherit; }
 
 .up { color: var(--red-ink); }
 .down { color: var(--green-ink); }
